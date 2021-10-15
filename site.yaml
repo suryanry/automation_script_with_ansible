@@ -1,0 +1,217 @@
+---
+  
+- hosts: webservers
+  become: true
+  
+  tasks:
+
+  - name: Updation of Cache
+    become: yes
+    apt:
+      update_cache: yes
+      cache_valid_time: 7200
+      
+  - name: UnInstall nginx 
+    apt:
+     name: nginx
+     state: absent   
+    
+  - name: Installing the packages from Nginx
+    become: true
+    apt:
+      name: nginx
+      state: latest   
+      
+  - name: Creating a directory
+    become: yes
+    file:
+     path: /home/A1/site
+     state: directory
+     mode: '0755'
+     
+  - name: Deleting file
+    file:
+     path: /etc/nginx/nginx.conf
+     state: absent
+     
+  - name: Copying file
+    become: yes
+    copy: 
+     src: ./nginx.conf
+     dest: /etc/nginx/nginx.conf
+ 
+      
+  - name: Nginx initiation    
+    service:
+              name: nginx 
+              state: started 
+    become: yes
+  
+  - name: Uninstall PHP 
+    apt:
+     name: php
+     state: absent   
+  
+  - name: Install PHP 
+    become: true
+    apt:
+      name: php
+      state: latest   
+      
+  - name: Installing PHP7.4 
+    apt:
+     name: php7.4-fpm
+     state: absent    
+  
+  - name: Package installation 
+    become: true
+    apt:
+      name: php7.4-fpm
+      state: latest   
+
+###
+
+  - name: Ansible deletion 
+    file:
+     path: /var/www/html/index.php
+     state: absent
+
+  - name: Copying file
+    become: yes
+    copy: 
+     src: ./index.php
+     dest: /var/www/html/index.php
+     #Installing all the packages
+
+
+  - name: Removing files
+    file:
+       path: "/etc/nginx/sites-enabled/default"
+       state: absent
+
+
+  - name: Insert file  
+    template:
+       src: "./default"
+       dest: "/etc/nginx/sites-available/default1"
+
+  - name: Linking  
+    file:
+       src: "/etc/nginx/sites-available/default1"
+       dest: "/etc/nginx/sites-enabled/default1"
+       state: link
+
+     
+  - name: Restarting Nginx
+    service:
+       name: nginx
+       state: restarted
+    become: yes        
+   
+     
+- hosts: all
+  gather_facts: y
+  
+- hosts: haproxy
+  become: true
+ 
+
+  vars:
+    haproxy_maxconns: 4096
+    haproxy_backlog: 2
+    haproxy_timeout_q: 400ms
+    haproxy_timoutconnect: 5000ms
+    haproxy_timeoutclient: 5000ms
+    haproxy_timoutserver: 5000ms
+    haproxy_http_timeout: 15s
+    haproxy_balance: leastconn
+    haproxy_frontend_port: 80
+
+  tasks:
+  
+  - name: Update cache
+    become: yes
+    apt:
+      update_cache: yes
+      cache_valid_time: 7200
+
+  - name: Installing packages
+    become: true
+    apt:
+      name: haproxy
+      state: latest   
+
+  - name: Upgrade
+    apt:
+      update_cache: yes
+      upgrade: dist
+      force_apt_get: yes
+    notify:
+      - run Haproxy      
+
+  - name: Information from servers
+    setup:
+      filter: ansible_default_ipv4.address   
+
+
+  - name: Removing haproxy_cfg
+    file:
+       path: "/etc/haproxy/haproxy.cfg"
+       state: absent
+    notify:
+    - restart Haproxy 
+
+  - name: Deploy HAProxy  
+    template:
+      src: ./haproxy.cfg.j2
+      dest: "/etc/haproxy/haproxy.cfg"
+    notify:
+      - restart Haproxy
+      - run Haproxy
+
+  - name: HAProxy 1st Response
+    uri: url=http://localhost/ return_content=yes
+    register: html_body
+  - debug: msg='{{ html_body.content }}'
+
+  - name: HAProxy 2nd Response
+    uri: url=http://localhost/ return_content=yes
+    register: html_body
+  - debug: msg='{{ html_body.content }}'
+
+  - name: HAProxy 3rd Response
+    uri: url=http://localhost/ return_content=yes
+    register: html_body
+  - debug: msg='{{ html_body.content }}'
+
+  handlers:
+
+  - name: run Haproxy
+    service:
+      name: haproxy
+      state: started
+
+  - name: restart Haproxy
+    service:
+      name: haproxy
+      state: restarted
+      
+- hosts: webservers
+  gather_facts: y
+  
+  tasks:
+  
+  - name: Restarting nginx
+    service:
+       name: nginx
+       state: restarted
+    become: yes
+
+
+
+
+
+
+
+
+
