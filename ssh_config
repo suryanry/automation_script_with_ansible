@@ -1,0 +1,35 @@
+
+host bastionET2598
+hostname 77.81.189.222
+port 22
+user ubuntu
+IdentityFile /home/surya/.ssh/key2
+
+host devC
+hostname 10.0.1.14
+port 22
+user ubuntu
+IdentityFile /home/surya/.ssh/key1
+proxyjump bastionET2598
+
+host devB
+hostname 10.0.1.13
+port 22
+user ubuntu
+IdentityFile /home/surya/.ssh/key1
+proxyjump bastionET2598
+
+host devA
+hostname 10.0.1.19
+port 22
+user ubuntu
+IdentityFile /home/surya/.ssh/key1
+proxyjump bastionET2598
+
+host devhaproxy
+hostname 10.0.1.15
+port 22
+user ubuntu
+IdentityFile /home/surya/.ssh/key1
+proxyjump bastionET2598
+
