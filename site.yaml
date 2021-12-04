@@ -186,11 +186,15 @@
   
   tasks:
   
-  - name: Restarting nginx
+  - name: restart nginx
     service:
        name: nginx
        state: restarted
     become: yes
+  - name: haproxy redumentary function test 
+    uri: url=http://localhost/ return_content=yes
+    register: html_body
+  - debug: msg='{{ html_body.content }}'
 
 
 
