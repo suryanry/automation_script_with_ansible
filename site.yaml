@@ -58,12 +58,12 @@
       name: php
       state: latest   
       
-  - name: Installing PHP7.4 
+  - name: Uinstalling PHP7.4 
     apt:
      name: php7.4-fpm
      state: absent    
   
-  - name: Package installation 
+  - name: PHP-FPM Package installation 
     become: true
     apt:
       name: php7.4-fpm
@@ -71,7 +71,7 @@
 
 ###
 
-  - name: Ansible deletion 
+  - name: PHP file deletion 
     file:
      path: /var/www/html/index.php
      state: absent
@@ -186,11 +186,6 @@
   
   tasks:
   
-  - name: restart nginx
-    service:
-       name: nginx
-       state: restarted
-    become: yes
   - name: haproxy redumentary function test 
     uri: url=http://localhost/ return_content=yes
     register: html_body
