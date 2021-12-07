@@ -27,7 +27,7 @@ IdentityFile /home/surya/.ssh/key1
 proxyjump bastionET2598
 
 host devhaproxy
-hostname 10.0.1.15
+hostname 77.81.189.40
 port 22
 user ubuntu
 IdentityFile /home/surya/.ssh/key1
