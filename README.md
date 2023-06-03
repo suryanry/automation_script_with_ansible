@@ -1,4 +1,4 @@
-# assignment-2
+# automation_script_with_ansible
 Network Automation using Ansible
 
 I have automated a network with the use of Ansible, where the network consists of 5 servers that are 'devhaproxy' - a server with HA Proxy configuration for public usage, 'devA' 'devB' 'devC' - are servers with Nginx configuration which gives services to public and 'bastionET2598' - is server with Bastion configuration for user usage.
